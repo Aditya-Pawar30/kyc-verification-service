@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Verification - PAN & Aadhaar Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-bar button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-bar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .upload-card h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-card h2 .icon {
+            font-size: 1.8rem;
+        }
+
+        .upload-card p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #e8edff;
+            transform: scale(1.02);
+        }
+
+        .upload-area.has-file {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .remove-file {
+            background: #ff5252;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .remove-file:hover {
+            background: #ff1744;
+        }
+
+        .submit-section {
+            text-align: center;
+        }
+
+        .submit-btn {
+            padding: 18px 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .result-content {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #333;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-bar input,
+            .search-bar button {
+                width: 100%;
+            }
+
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 KYC Verification System</h1>
+            <p>Upload your PAN and Aadhaar cards for instant verification</p>
+        </header>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search by PAN number, Aadhaar number, or name...">
+                <button onclick="handleSearch()">🔍 Search</button>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <!-- PAN Card Upload -->
+            <div class="upload-card">
+                <h2><span class="icon">💳</span> PAN Card</h2>
+                <p>Upload your PAN card image or PDF for verification</p>
+                
+                <div class="upload-area" id="panUploadArea" onclick="document.getElementById('panFile').click()">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Click to upload or drag and drop</div>
+                    <div class="upload-hint">Supports: PNG, JPG, JPEG, PDF (Max 10MB)</div>
+                </div>
+                
+                <input type="file" id="panFile" class="file-input" accept=".png,.jpg,.jpeg,.pdf" onchange="handleFileSelect(event, 'pan')">
+                
+                <div class="file-preview" id="panPreview">
+                    <div class="file-info">
+                        <div class="file-icon">📄</div>
+                        <div class="file-details">
+                            <div class="file-name" id="panFileName"></div>
+                            <div class="file-size" id="panFileSize"></div>
+                        </div>
+                        <button class="remove-file" onclick="removeFile('pan')">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aadhaar Card Upload -->
+            <div class="upload-card">
+                <h2><span class="icon">🪪</span> Aadhaar Card</h2>
+                <p>Upload your Aadhaar card image or PDF for verification</p>
+                
+                <div class="upload-area" id="aadhaarUploadArea" onclick="document.getElementById('aadhaarFile').click()">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Click to upload or drag and drop</div>
+                    <div class="upload-hint">Supports: PNG, JPG, JPEG, PDF (Max 10MB)</div>
+                </div>
+                
+                <input type="file" id="aadhaarFile" class="file-input" accept=".png,.jpg,.jpeg,.pdf" onchange="handleFileSelect(event, 'aadhaar')">
+                
+                <div class="file-preview" id="aadhaarPreview">
+                    <div class="file-info">
+                        <div class="file-icon">📄</div>
+                        <div class="file-details">
+                            <div class="file-name" id="aadhaarFileName"></div>
+                            <div class="file-size" id="aadhaarFileSize"></div>
+                        </div>
+                        <button class="remove-file" onclick="removeFile('aadhaar')">×</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <button class="submit-btn" id="submitBtn" onclick="submitFiles()" disabled>
+                🚀 Verify Documents
+            </button>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing your documents... Please wait</div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Result Section -->
+        <div class="result-section" id="resultSection">
+            <h2>📊 Verification Results</h2>
+            <div class="result-content" id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let panFile = null;
+        let aadhaarFile = null;
+
+        // Drag and drop functionality
+        const panUploadArea = document.getElementById('panUploadArea');
+        const aadhaarUploadArea = document.getElementById('aadhaarUploadArea');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            panUploadArea.addEventListener(eventName, preventDefaults, false);
+            aadhaarUploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            panUploadArea.addEventListener(eventName, () => panUploadArea.classList.add('dragover'), false);
+            aadhaarUploadArea.addEventListener(eventName, () => aadhaarUploadArea.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            panUploadArea.addEventListener(eventName, () => panUploadArea.classList.remove('dragover'), false);
+            aadhaarUploadArea.addEventListener(eventName, () => aadhaarUploadArea.classList.remove('dragover'), false);
+        });
+
+        panUploadArea.addEventListener('drop', (e) => handleDrop(e, 'pan'), false);
+        aadhaarUploadArea.addEventListener('drop', (e) => handleDrop(e, 'aadhaar'), false);
+
+        function handleDrop(e, type) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleFile(files[0], type);
+            }
+        }
+
+        function handleFileSelect(event, type) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file, type);
+            }
+        }
+
+        function handleFile(file, type) {
+            // Validate file type
+            const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Invalid file type. Please upload PNG, JPG, JPEG, or PDF files only.');
+                return;
+            }
+
+            // Validate file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File size exceeds 10MB limit.');
+                return;
+            }
+
+            if (type === 'pan') {
+                panFile = file;
+                document.getElementById('panFileName').textContent = file.name;
+                document.getElementById('panFileSize').textContent = formatFileSize(file.size);
+                document.getElementById('panPreview').classList.add('show');
+                panUploadArea.classList.add('has-file');
+            } else {
+                aadhaarFile = file;
+                document.getElementById('aadhaarFileName').textContent = file.name;
+                document.getElementById('aadhaarFileSize').textContent = formatFileSize(file.size);
+                document.getElementById('aadhaarPreview').classList.add('show');
+                aadhaarUploadArea.classList.add('has-file');
+            }
+
+            updateSubmitButton();
+            hideMessages();
+        }
+
+        function removeFile(type) {
+            if (type === 'pan') {
+                panFile = null;
+                document.getElementById('panFile').value = '';
+                document.getElementById('panPreview').classList.remove('show');
+                panUploadArea.classList.remove('has-file');
+            } else {
+                aadhaarFile = null;
+                document.getElementById('aadhaarFile').value = '';
+                document.getElementById('aadhaarPreview').classList.remove('show');
+                aadhaarUploadArea.classList.remove('has-file');
+            }
+
+            updateSubmitButton();
+            hideMessages();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = !(panFile && aadhaarFile);
+        }
+
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                showError('Please enter a search term');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingSection').classList.add('show');
+            hideMessages();
+
+            // Simulate search (replace with actual API call)
+            setTimeout(() => {
+                document.getElementById('loadingSection').classList.remove('show');
+                showSuccess(`Search completed for: ${searchTerm}`);
+            }, 1500);
+        }
+
+        async function submitFiles() {
+            if (!panFile || !aadhaarFile) {
+                showError('Please upload both PAN and Aadhaar cards');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingSection').classList.add('show');
+            document.getElementById('submitBtn').disabled = true;
+            hideMessages();
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('panFile', panFile);
+            formData.append('aadhaarFile', aadhaarFile);
+
+            try {
+                // Send to backend
+                const response = await fetch('/process-and-detect', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Hide loading
+                document.getElementById('loadingSection').classList.remove('show');
+
+                // Show results
+                document.getElementById('resultContent').textContent = JSON.stringify(result, null, 2);
+                document.getElementById('resultSection').classList.add('show');
+                showSuccess('Documents processed successfully!');
+
+            } catch (error) {
+                document.getElementById('loadingSection').classList.remove('show');
+                showError(`Error: ${error.message}`);
+            } finally {
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+    </script>
+</body>
+</html>

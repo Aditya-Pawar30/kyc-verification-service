@@ -9,8 +9,8 @@ class Settings:
     """Application settings and configuration"""
     
     # Sandbox API Configuration
-    SANDBOX_API_KEY: str = os.getenv("SANDBOX_API_KEY", "key_live_8451e4a94072438a95712f2364df411d")
-    SANDBOX_API_SECRET: str = os.getenv("SANDBOX_API_SECRET", "secret_live_478ab0e0c04c453d96976e93d5af535b")
+    SANDBOX_API_KEY: str = os.getenv("SANDBOX_API_KEY", "your sandbox api")
+    SANDBOX_API_SECRET: str = os.getenv("SANDBOX_API_SECRET", "secret key")
     SANDBOX_BASE_URL: str = "https://sandbox.co.in"
     
     # API Endpoints
